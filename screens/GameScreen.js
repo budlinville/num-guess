@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Button, Alert, ScrollView, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';	// EvilIcons, MaterialIcons, etc.
 
 import NumberContainer from "../components/NumberContainer"
@@ -17,10 +17,10 @@ const generateRandomBetween = (min, max, exclude) => {
 	return rndNum;
 };
 
-const renderListItem = (value, numOfRounds) => (
-	<View key={value} style={styles.listItem}>
-		<Text style={DefaultStyles.bodyText}>#{numOfRounds}</Text>
-		<Text style={DefaultStyles.bodyText}>{value}</Text>
+const renderListItem = (listLength, itemData) => (
+	<View style={styles.listItem}>
+		<Text style={DefaultStyles.bodyText}>#{listLength - itemData.index}</Text>
+		<Text style={DefaultStyles.bodyText}>{itemData.item}</Text>
 	</View>
 );
 
@@ -29,7 +29,7 @@ const GameScreen = props => {
 
 	const initialGuess = generateRandomBetween(1, 100, userChoice);
 	const [currentGuess, setCurrentGuess] = useState(initialGuess);
-	const [pastGuesses, setPastGuesses] = useState([initialGuess]);
+	const [pastGuesses, setPastGuesses] = useState([initialGuess.toString()]);
 	// Reference variables such as these hold values that persist through re-renders
 	// This is different than state because changing these values does not trigger re-renders
 	const currentLow = useRef(1);
@@ -58,7 +58,7 @@ const GameScreen = props => {
 		}
 		const nextNumber = generateRandomBetween(currentLow.current, currentHigh.current, currentGuess);
 		setCurrentGuess(nextNumber);
-		setPastGuesses(curPastGuesses => [nextNumber, ...curPastGuesses]);
+		setPastGuesses(curPastGuesses => [nextNumber.toString(), ...curPastGuesses]);
 	};
 
 	return (
@@ -74,9 +74,15 @@ const GameScreen = props => {
 				</MainButton>
 			</Card>
 			<View style={styles.listContainer}>
-				<ScrollView contentContainerStyle={styles.list}>
+				{/*<ScrollView contentContainerStyle={styles.list}>
 					{pastGuesses.map((guess, index) => renderListItem(guess, pastGuesses.length - index))}
-				</ScrollView>
+				</ScrollView>*/}
+				<FlatList
+					keyExtractor={item => item}
+					data={pastGuesses}
+					renderItem={itemData => renderListItem(pastGuesses.length, itemData)}
+					contentContainerStyle={styles.list}
+				/>
 			</View>
 		</View>
 	);
@@ -96,12 +102,11 @@ const styles = StyleSheet.create({
 		maxWidth: "90%"
 	},
 	listContainer: {
-		width: "80%",
-		flex: 1
+		flex: 1,
+		width: "60%"
 	},
 	list: {
 		flexGrow: 1,
-		alignItems: 'center',
 		justifyContent: 'flex-end'
 	},
 	listItem: {
@@ -112,7 +117,7 @@ const styles = StyleSheet.create({
 		backgroundColor: "white",
 		flexDirection: "row",
 		justifyContent: 'space-between',
-		width: "60%"
+		width: "100%"
 	}
 });
 
