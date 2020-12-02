@@ -10,6 +10,7 @@ import {
 	Dimensions
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';	// EvilIcons, MaterialIcons, etc.
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 import NumberContainer from "../components/NumberContainer"
 import Card from "../components/Card";
@@ -34,6 +35,7 @@ const renderListItem = (listLength, itemData) => (
 );
 
 const GameScreen = props => {
+	// ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
 	const { userChoice, onGameOver } = props;
 
 	const initialGuess = generateRandomBetween(1, 100, userChoice);
